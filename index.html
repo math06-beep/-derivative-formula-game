@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Derivative Formula Quest</title>
+<style>
+:root{--bg:#f7f4ff;--card:#fff;--ink:#25233a;--muted:#716d83;--accent:#6d5dfc;--accent2:#ffb84d;--ok:#138a5b;--bad:#c54242;--line:#e8e4f4}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Thai",Tahoma,sans-serif;background:linear-gradient(135deg,#f7f4ff,#fff9ed);color:var(--ink)}
+.wrap{max-width:820px;margin:auto;padding:18px 16px 40px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
+.brand{font-weight:900;font-size:clamp(22px,4vw,34px)}.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 13px;font-weight:800}
+.card{background:rgba(255,255,255,.96);border:1px solid var(--line);box-shadow:0 15px 40px rgba(70,58,120,.10);border-radius:24px;padding:22px}
+.hero{text-align:center;padding:24px 10px 10px}.hero .emoji{font-size:64px}h1{margin:4px 0 8px;font-size:clamp(28px,5vw,44px)}.sub{color:var(--muted);line-height:1.65}
+.fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:20px 0}input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:14px;font-size:16px;background:#fff}
+button{border:0;border-radius:16px;padding:14px 18px;font-size:17px;font-weight:900;cursor:pointer}.primary{background:var(--accent);color:#fff;width:100%}
+.progress{height:12px;background:#ece9f7;border-radius:999px;overflow:hidden;margin:14px 0 22px}.bar{height:100%;background:linear-gradient(90deg,var(--accent),#9c8cff);width:0;transition:.25s}
+.qno{color:var(--accent);font-weight:900}.question{font-size:clamp(22px,4vw,30px);font-weight:900;line-height:1.45;margin:8px 0 18px}
+.choices{display:grid;gap:11px}.choice{text-align:left;background:#fff;border:2px solid var(--line);color:var(--ink);transition:.15s}.choice.correct{border-color:#77c7a4;background:#eefbf5;color:#0f6e49}.choice.wrong{border-color:#e7a0a0;background:#fff2f2;color:#a02f2f}
+.feedback{min-height:52px;margin:15px 2px 4px;font-weight:700;line-height:1.5}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.next{background:var(--accent2);color:#513713;min-width:130px}
+.scorebig{font-size:72px;font-weight:1000;color:var(--accent);margin:6px 0}.badge{font-size:22px;font-weight:900;margin-bottom:12px}
+.review{margin-top:18px;text-align:left}details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 13px;margin:8px 0}summary{cursor:pointer;font-weight:800}
+.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}.hidden{display:none!important}
+@media(max-width:620px){.fields{grid-template-columns:1fr}.card{padding:17px;border-radius:20px}.top{align-items:flex-start;flex-direction:column}}
+</style></head>
+<body><div class="wrap">
+<div class="top"><div class="brand">🧠 Derivative Formula Quest</div><div class="pill" id="scorePill">คะแนน 0/20</div></div>
+<section id="start" class="card"><div class="hero"><div class="emoji">🚀✏️</div><h1>ภารกิจพิชิตอนุพันธ์</h1>
+<div class="sub">เกมฝึกหาอนุพันธ์โดยใช้สูตร ระดับง่าย–ปานกลาง<br>20 ข้อ • ข้อละ 1 คะแนน • ตอบแล้วรู้ผลทันที</div></div>
+<div class="fields"><input id="name" placeholder="ชื่อ-สกุล"><input id="room" placeholder="ชั้น/ห้อง เช่น ม.6/3"><input id="no" placeholder="เลขที่"></div>
+<button class="primary" onclick="startGame()">เริ่มเกม</button></section>
+<section id="game" class="card hidden"><div class="row"><div class="qno" id="qno"></div><div id="student"></div></div>
+<div class="progress"><div class="bar" id="bar"></div></div><div class="question" id="question"></div><div class="choices" id="choices"></div>
+<div class="feedback" id="feedback"></div><div class="row"><div></div><button id="nextBtn" class="next hidden" onclick="nextQuestion()">ข้อต่อไป →</button></div></section>
+<section id="result" class="card hidden"><div class="hero"><div class="emoji" id="resultEmoji">🏆</div><h1>จบภารกิจแล้ว</h1>
+<div id="resultStudent" class="sub"></div><div class="scorebig" id="finalScore"></div><div class="badge" id="badge"></div><div class="sub" id="resultText"></div>
+<button class="primary" style="margin-top:18px" onclick="restart()">เล่นใหม่อีกครั้ง</button><div class="review" id="review"></div></div></section>
+<div class="footer">Derivative Formula Quest • เหมาะสำหรับชั้น ม.6</div></div>
+<script>
+const questions = [{"q": "ถ้า f(x)=5 แล้ว f'(x) เท่ากับข้อใด?", "choices": ["0", "1", "5", "x"], "ans": 0, "ex": "อนุพันธ์ของค่าคงตัวเท่ากับ 0"}, {"q": "ถ้า f(x)=x แล้ว f'(x) เท่ากับข้อใด?", "choices": ["0", "1", "x", "2x"], "ans": 1, "ex": "d/dx(x)=1"}, {"q": "ถ้า f(x)=x² แล้ว f'(x) เท่ากับข้อใด?", "choices": ["x", "2x", "x²", "2"], "ans": 1, "ex": "ใช้กฎยกกำลัง d/dx(xⁿ)=nxⁿ⁻¹"}, {"q": "ถ้า f(x)=x³ แล้ว f'(x) เท่ากับข้อใด?", "choices": ["3x²", "x²", "3x", "x⁴"], "ans": 0, "ex": "d/dx(x³)=3x²"}, {"q": "ถ้า f(x)=4x² แล้ว f'(x) เท่ากับข้อใด?", "choices": ["4x", "8x", "8x²", "2x"], "ans": 1, "ex": "4·2x=8x"}, {"q": "ถ้า f(x)=7x³ แล้ว f'(x) เท่ากับข้อใด?", "choices": ["21x²", "7x²", "21x³", "3x²"], "ans": 0, "ex": "7·3x²=21x²"}, {"q": "ถ้า f(x)=3x²+5 แล้ว f'(x) เท่ากับข้อใด?", "choices": ["6x+5", "6x", "3x", "6"], "ans": 1, "ex": "อนุพันธ์ของ 5 เท่ากับ 0"}, {"q": "ถ้า f(x)=2x³−4x แล้ว f'(x) เท่ากับข้อใด?", "choices": ["6x²−4", "6x−4", "2x²−4", "6x²"], "ans": 0, "ex": "หาอนุพันธ์ทีละพจน์"}, {"q": "ถ้า f(x)=x⁴+2x²−3 แล้ว f'(x) เท่ากับข้อใด?", "choices": ["4x³+4x", "4x³+2x", "x³+4x", "4x⁴+4x"], "ans": 0, "ex": "d/dx(x⁴)=4x³ และ d/dx(2x²)=4x"}, {"q": "ถ้า f(x)=5x⁴−3x²+x−8 แล้ว f'(x) เท่ากับข้อใด?", "choices": ["20x³−6x+1", "20x³−3x+1", "5x³−6x", "20x⁴−6x²+1"], "ans": 0, "ex": "ใช้กฎผลบวก/ผลต่างและกฎยกกำลัง"}, {"q": "ถ้า f(x)=1/x แล้ว f'(x) เท่ากับข้อใด?", "choices": ["1/x²", "−1/x²", "−1/x", "x⁻¹"], "ans": 1, "ex": "x⁻¹ → −x⁻²"}, {"q": "ถ้า f(x)=3/x² แล้ว f'(x) เท่ากับข้อใด?", "choices": ["−6/x³", "6/x³", "−3/x²", "−6/x²"], "ans": 0, "ex": "3x⁻² → −6x⁻³"}, {"q": "ถ้า f(x)=√x แล้ว f'(x) เท่ากับข้อใด?", "choices": ["1/(2√x)", "2√x", "√x/2", "1/√x"], "ans": 0, "ex": "x¹ᐟ² → (1/2)x⁻¹ᐟ²"}, {"q": "ถ้า f(x)=1/√x แล้ว f'(x) เท่ากับข้อใด?", "choices": ["−1/(2x√x)", "1/(2√x)", "−1/√x", "1/(2x√x)"], "ans": 0, "ex": "x⁻¹ᐟ² → (−1/2)x⁻³ᐟ²"}, {"q": "ถ้า f(x)=2√x+3x² แล้ว f'(x) เท่ากับข้อใด?", "choices": ["1/√x+6x", "2/√x+6x", "1/√x+3x", "√x+6x"], "ans": 0, "ex": "หาอนุพันธ์ทีละพจน์"}, {"q": "กำหนด f(x)=x²+3x และ g(x)=2x−1 ถ้า h(x)=f(x)+g(x) แล้ว h'(x) คือข้อใด?", "choices": ["2x+5", "2x+3", "4x+2", "2x+4"], "ans": 0, "ex": "f'(x)=2x+3 และ g'(x)=2"}, {"q": "กำหนด f(x)=x³−2x²+4x ถ้า f'(2) เท่ากับข้อใด?", "choices": ["8", "4", "12", "0"], "ans": 0, "ex": "f'(x)=3x²−4x+4 และ f'(2)=8"}, {"q": "ถ้า y=(x²+1)(x+2) แล้ว y' เท่ากับข้อใด?", "choices": ["3x²+4x+1", "3x²+4x+2", "2x(x+2)", "x²+2x+1"], "ans": 0, "ex": "ใช้กฎผลคูณ"}, {"q": "ถ้า y=x²(x³+1) แล้ว y' เท่ากับข้อใด?", "choices": ["5x⁴+2x", "5x⁴+x", "2x(x³+1)", "3x⁴+2x"], "ans": 0, "ex": "กฎผลคูณให้ 2x(x³+1)+3x⁴"}, {"q": "ถ้า y=(x²+1)/x แล้ว y' เท่ากับข้อใด?", "choices": ["1−1/x²", "1+1/x²", "2x−1/x²", "(x²−1)/x"], "ans": 0, "ex": "เขียน y=x+x⁻¹ แล้วหาอนุพันธ์"}];
+let idx=0,score=0,answered=false,wrongs=[];
+const letters=['ก','ข','ค','ง'];
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function startGame(){
+ const n=document.getElementById('name').value.trim()||'ผู้เล่น',r=document.getElementById('room').value.trim(),no=document.getElementById('no').value.trim();
+ sessionStorage.setItem('df_name',n);sessionStorage.setItem('df_room',r);sessionStorage.setItem('df_no',no);
+ document.getElementById('start').classList.add('hidden');document.getElementById('game').classList.remove('hidden');render();
+}
+function render(){
+ answered=false;const q=questions[idx];
+ document.getElementById('qno').textContent=`ข้อ ${idx+1} จาก 20`;
+ document.getElementById('student').textContent=[sessionStorage.df_name,sessionStorage.df_room,sessionStorage.df_no?`เลขที่ ${sessionStorage.df_no}`:''].filter(Boolean).join(' • ');
+ document.getElementById('bar').style.width=`${idx/20*100}%`;document.getElementById('question').textContent=q.q;
+ document.getElementById('feedback').innerHTML='';document.getElementById('nextBtn').classList.add('hidden');
+ const c=document.getElementById('choices');c.innerHTML='';
+ q.choices.forEach((t,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=`${letters[i]}. ${t}`;b.onclick=()=>choose(i,b);c.appendChild(b);});
+}
+function choose(i,b){
+ if(answered)return;answered=true;const q=questions[idx],buttons=[...document.querySelectorAll('.choice')];
+ buttons.forEach(x=>x.disabled=true);buttons[q.ans].classList.add('correct');
+ if(i===q.ans){score++;document.getElementById('feedback').innerHTML=`<span class="ok">✓ ถูกต้อง!</span> ${q.ex}`;}
+ else{b.classList.add('wrong');wrongs.push(idx);document.getElementById('feedback').innerHTML=`<span class="bad">✗ ยังไม่ถูก</span> คำตอบที่ถูกคือ <b>${q.choices[q.ans]}</b> — ${q.ex}`;}
+ document.getElementById('scorePill').textContent=`คะแนน ${score}/20`;document.getElementById('nextBtn').textContent=idx===19?'ดูผลคะแนน':'ข้อต่อไป →';document.getElementById('nextBtn').classList.remove('hidden');
+}
+function nextQuestion(){idx++;if(idx>=20)finish();else render();}
+function finish(){
+ document.getElementById('game').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('finalScore').textContent=`${score}/20`;
+ document.getElementById('resultStudent').textContent=[sessionStorage.df_name,sessionStorage.df_room,sessionStorage.df_no?`เลขที่ ${sessionStorage.df_no}`:''].filter(Boolean).join(' • ');
+ let badge,txt,em;if(score>=18){badge='🌟 ระดับยอดเยี่ยม';txt='ใช้สูตรอนุพันธ์ได้คล่องและแม่นยำ';em='🏆';}
+ else if(score>=15){badge='👏 ระดับดีมาก';txt='เข้าใจกฎพื้นฐานดี ทบทวนข้อที่พลาดอีกเล็กน้อย';em='🎯';}
+ else if(score>=12){badge='👍 ระดับผ่านเกณฑ์';txt='ควรฝึกเลขชี้กำลังลบ ราก และกฎผลคูณเพิ่ม';em='📘';}
+ else{badge='💪 ฝึกอีกนิด';txt='ทบทวนกฎยกกำลัง ค่าคงตัว ผลบวก/ผลต่าง และกฎผลคูณก่อนเล่นซ้ำ';em='🌱';}
+ document.getElementById('badge').textContent=badge;document.getElementById('resultText').textContent=txt;document.getElementById('resultEmoji').textContent=em;
+ const rv=document.getElementById('review');
+ rv.innerHTML=wrongs.length?'<h3>ทบทวนข้อที่ตอบผิด</h3>'+wrongs.map(k=>`<details><summary>ข้อ ${k+1}: ${esc(questions[k].q)}</summary><div style="margin-top:8px">คำตอบ: <b>${esc(questions[k].choices[questions[k].ans])}</b><br>${esc(questions[k].ex)}</div></details>`).join(''):'<h3>Perfect Score! 🎉 ตอบถูกทุกข้อ</h3>';
+}
+function restart(){idx=0;score=0;answered=false;wrongs=[];document.getElementById('scorePill').textContent='คะแนน 0/20';document.getElementById('result').classList.add('hidden');document.getElementById('start').classList.remove('hidden');}
+</script></body></html>
